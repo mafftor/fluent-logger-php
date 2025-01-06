@@ -99,16 +99,16 @@ class FluentLogger implements LoggerInterface
      * create fluent logger object.
      *
      *
-     * @param string          $host
-     * @param int             $port
-     * @param array           $options
-     * @param PackerInterface $packer
+     * @param string               $host
+     * @param int                  $port
+     * @param array                $options
+     * @param PackerInterface|null $packer
      * @return FluentLogger
      */
     public function __construct($host = FluentLogger::DEFAULT_ADDRESS,
                                 $port = FluentLogger::DEFAULT_LISTEN_PORT,
                                 array $options = array(),
-                                PackerInterface $packer = null)
+                                $packer = null)
     {
         /* keep original host and port */
         $this->host = $host;
@@ -120,6 +120,8 @@ class FluentLogger implements LoggerInterface
         if (is_null($packer)) {
             /* for backward compatibility */
             $packer = new JsonPacker();
+        } elseif (!$packer instanceof PackerInterface) {
+            throw new \InvalidArgumentException(sprintf('The $packer parameter must implement %s. %s given.', PackerInterface::class, get_class($packer)));
         }
 
         $this->packer = $packer;
